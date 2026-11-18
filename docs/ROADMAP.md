@@ -5,14 +5,19 @@ Status key: ✅ done · 🟡 partial · ⬜ not started. Nothing is marked done 
 ## Phase 1 — Core ledger (PWA v1–v4) ✅
 Accounts, transactions, derived balances, net worth, budgets, bills, debts, goals, backup/restore, EN/BM, Apple Pay file-import workaround.
 
-## Phase 2 — Premium design + command centre (PWA v5) 🟡
+## Phase 2 — Premium design + command centre (PWA v5–v6) 🟡
 - ✅ Poket White + Blue design tokens, light + dark tuned separately
 - ✅ Home dashboard: overview hero, 6 glance widgets, 4 coming-up cards, 7 your-money cards, detail sheets, customisation, privacy mode
 - ✅ Safe-to-spend with payday option; receivables
-- ⬜ Restyle the remaining tabs to the new card and section system (they inherit the tokens but keep the older layout)
+- ✅ v6: dashboard matched to the reference screenshots — cumulative trend vs last month, budget pace gauge, category-split money flow, forecast line, payment calendar, goal ring, card rewards (points, annual fees), receivables + borrowed with due dates
+- ✅ v6: module navigation (Overview · Spending · Wallet · Bills · Assets + More), Statistics (month/year), Poket Connect status page, Tax Centre placeholder (no figures until LHDN data is verified)
+- ✅ v6: data-integrity tests in a headless iPhone (expense, income, transfer, card payment, investment, bill payment)
+- 🟡 Older pages (accounts list, transaction sheet, goals) still use the earlier row layout inside the new tabs
+- ⬜ Unmatched receipts in To review (needs receipt capture, Phase 3)
+- ⬜ Realised gains, dividends, individual holdings (units × price) — Phase 4
 - ⬜ Monthly / weekly / payday budget modes in the budget editor
 - ⬜ Evaluate and install design skills (UI/UX Pro Max, Anthropic frontend-design, Impeccable) for ongoing design critique
-- ⬜ Get the two reference dashboard screenshots from the user and compare against them
+- ✅ Reference dashboard screenshots received and implemented (v6)
 - ⬜ Automated tests for `computeBalances`, `monthStats`, `forecast`, `safeToSpend`
 
 ## Phase 3 — Capture & Poket Connect

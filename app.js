@@ -391,7 +391,9 @@ const looksLikeCcPay=s=>/(bayar|payment|pay).{0,12}(kad|card|cc|credit)|kad kred
 /* ================= UI bits ================= */
 const TABS=[['home','home'],['activity','list'],['portfolio','pie'],['debts','card'],['goals','target']];
 const ROUTES=['home','activity','portfolio','debts','goals','settings'];
-function route(){const h=(location.hash||'').slice(1);return ROUTES.includes(h)?h:'home'}
+function route(){let h=(location.hash||'').slice(1);
+  if(typeof ROUTE_ALIAS!=='undefined'&&ROUTE_ALIAS[h]){const [r,sg]=ROUTE_ALIAS[h];S.seg=S.seg||{};if(sg)S.seg[r]=sg;try{history.replaceState(null,'','#'+r)}catch(e){}h=r}
+  return ROUTES.includes(h)?h:'home'}
 function notice(text,cls,btn){return `<div class="notice ${cls||''}"><span class="ind"></span><div class="tx">${text}</div>${btn||''}</div>`}
 const sec=(title,right)=>`<div class="sec"><h2>${title}</h2>${right||''}</div>`;
 const link=(label,act,v)=>`<span class="lnk" data-act="${act}" ${v?`data-v="${v}"`:''}>${label}</span>`;
@@ -425,6 +427,8 @@ function modeBanner(){
 }
 
 /* ================= Views ================= */
+// modules.js adds tabs here; keep the original views registered so old links work.
+const VIEWS={home:()=>typeof vDash==='function'?vDash():vHome(),activity:()=>vAct(),portfolio:()=>vPort(),debts:()=>vDebts(),goals:()=>vGoals(),settings:()=>vSettings()};
 function render(){
   document.documentElement.lang=LANG;
   const th=S.settings.theme||'auto';if(th==='auto')document.documentElement.removeAttribute('data-theme');else document.documentElement.setAttribute('data-theme',th);
@@ -432,10 +436,10 @@ function render(){
   $('#tabs').innerHTML=TABS.map(([k,i])=>`<button data-act="tab" data-v="${k}" class="${k===r?'on':''}">${ic(i)}${T().tabs[k]}</button>`).join('');
   $('#status').className='status'+(S.mode==='db'?' ok':'');
   $('#fab').innerHTML=ic('plus');
-  $('#fab').style.display=(r==='settings'||r==='goals'||!S.ready)?'none':'';
-  $('#gear').className='icbtn'+(r==='settings'?' on':'');
+  $('#fab').style.display=(['settings','connect','tax'].includes(r)||!S.ready)?'none':'';
+  $('#gear').className='icbtn'+(['settings','connect','tax'].includes(r)?' on':'');
   if(!S.ready){$('#view').innerHTML=`<div class="empty">${t('loading')}</div>`;return}
-  $('#view').innerHTML=modeBanner()+({home:()=>typeof vDash==='function'?vDash():vHome(),activity:vAct,portfolio:vPort,debts:vDebts,goals:vGoals,settings:vSettings}[r])();
+  $('#view').innerHTML=modeBanner()+(VIEWS[r]||VIEWS.home)();
 }
 
 function vHome(){
@@ -707,7 +711,7 @@ function openAcc(id,type,draft){
   <div class="f"><label>${t('name')}</label><input id="a_name" placeholder="${esc(T().phName[ty])}" value="${esc(a.name)}"></div>
   ${ty==='invest'?`<div class="f"><label>${t('invKind')}</label><select id="a_kind">${KINDS.map(k=>`<option value="${k}" ${a.kind===k?'selected':''}>${esc(kindLabel(k))}</option>`).join('')}</select></div>`:''}
   ${fld('a_open',T().open[ty],a.opening===''?'':a.opening,'0.00',isNew?t('openHintNew'):t('openHintEdit'))}
-  ${ty==='cc'?`<div class="inline">${fld('a_limit',t('limitLbl'),a.limit||'')}${fld('a_due',t('dueLbl'),a.dueDay||'',t('duePh'),'','numeric')}</div>`:''}
+  ${ty==='cc'?`<div class="inline">${fld('a_limit',t('limitLbl'),a.limit||'')}${fld('a_due',t('dueLbl'),a.dueDay||'',t('duePh'),'','numeric')}</div><div class="inline">${fld('a_annualFee',t('feeLbl'),a.annualFee||'','0.00')}<div class="f"><label>${t('feeMonLbl')}</label><select id="a_feeMonth"><option value="">—</option>${T().mon.map((m,i)=>`<option value="${i+1}" ${+a.feeMonth===i+1?'selected':''}>${m}</option>`).join('')}</select></div></div>${fld('a_points',t('ptsLbl'),a.points||'','0',t('ptsHint'),'numeric')}`:''}
   ${ty==='loan'||ty==='bnpl'?`<div class="inline">${fld('a_monthly',t('monthlyLbl'),a.monthly||'')}${fld('a_due',t('dueLbl'),a.dueDay||'',t('duePh'),'','numeric')}</div>${fld('a_orig',t('origLbl'),a.orig||'','',t('origHint'))}`:''}
   ${['bank','ewallet','cc','bnpl'].includes(ty)?`<div class="f"><label>${t('walletLbl')}</label><input id="a_alias" placeholder="${esc(t('walletPh'))}" value="${esc((a.alias||[]).join(', '))}"><div class="hint">${t('walletHint')}</div></div>`:''}
   <div class="btns" style="margin-top:4px"><button class="btn" style="flex:1" data-act="accSave" data-v="${id||''}">${t('save')}</button>
@@ -717,7 +721,7 @@ function openAcc(id,type,draft){
 function collectAcc(base){
   const g=id=>{const e=document.getElementById(id);return e?e.value:undefined};
   const a=Object.assign({},base);a.type=g('a_type')||a.type;if(g('a_name')!==undefined)a.name=g('a_name').trim();if(g('a_open')!==undefined)a.opening=g('a_open');
-  ['kind','limit','monthly','orig'].forEach(k=>{if(g('a_'+k)!==undefined)a[k]=g('a_'+k)});if(g('a_due')!==undefined)a.dueDay=g('a_due');
+  ['kind','limit','monthly','orig','annualFee','feeMonth','points'].forEach(k=>{if(g('a_'+k)!==undefined)a[k]=g('a_'+k)});if(g('a_due')!==undefined)a.dueDay=g('a_due');
   if(g('a_alias')!==undefined)a.alias=g('a_alias').split(',').map(s=>s.trim()).filter(Boolean);
   return a;
 }
@@ -725,9 +729,9 @@ function saveAcc(id){
   const base=id?accById(id):{};const a=collectAcc(base);
   if(!a.name)return toast(t('tEnterName'));
   a.opening=r2(num(a.opening)||0);
-  const keep={cc:['limit','dueDay','alias'],loan:['monthly','dueDay','orig'],bnpl:['monthly','dueDay','orig','alias'],bank:['alias'],ewallet:['alias'],invest:['kind','value','costAtValue','valueDate'],property:['value','costAtValue','valueDate'],vehicle:['value','costAtValue','valueDate'],asset:['value','costAtValue','valueDate']}[a.type]||[];
-  ['limit','dueDay','monthly','orig','alias','kind','value','costAtValue','valueDate'].forEach(k=>{if(!keep.includes(k))delete a[k]});
-  ['limit','monthly','orig'].forEach(k=>{if(k in a)a[k]=r2(num(a[k])||0)});if('dueDay' in a)a.dueDay=parseInt(a.dueDay)||'';
+  const keep={cc:['limit','dueDay','alias','annualFee','feeMonth','points'],loan:['monthly','dueDay','orig'],bnpl:['monthly','dueDay','orig','alias'],bank:['alias'],ewallet:['alias'],invest:['kind','value','costAtValue','valueDate'],property:['value','costAtValue','valueDate'],vehicle:['value','costAtValue','valueDate'],asset:['value','costAtValue','valueDate']}[a.type]||[];
+  ['limit','dueDay','monthly','orig','alias','kind','value','costAtValue','valueDate','annualFee','feeMonth','points'].forEach(k=>{if(!keep.includes(k))delete a[k]});
+  ['limit','monthly','orig','annualFee'].forEach(k=>{if(k in a)a[k]=r2(num(a[k])||0)});if('points' in a)a.points=Math.round(num(a.points)||0);if('feeMonth' in a)a.feeMonth=parseInt(a.feeMonth)||'';if('dueDay' in a)a.dueDay=parseInt(a.dueDay)||'';
   if(a.type==='invest'&&!a.kind)a.kind='asb';
   if((a.type==='loan'||a.type==='bnpl')&&!a.orig)a.orig=a.opening;
   if(id){Object.keys(base).forEach(k=>delete base[k]);Object.assign(base,a)}else{a.id=nid();a.created=todayStr();a.lastCheck=todayStr();S.accounts.push(a)}

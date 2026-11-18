@@ -21,7 +21,7 @@ Move data from the Claude version:
 3. New app: Settings -> Restore backup -> paste -> Restore (tap twice).
 
 Updating later: upload the new files, and change VERSION in sw.js
-(e.g. poket-v7) so phones pick up the update.
+(e.g. poket-v8) so phones pick up the update.
 
 Data lives only on your phone. Back up regularly (Settings -> Backup
 saves a .json file you can keep in Files/iCloud Drive).

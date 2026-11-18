@@ -1,6 +1,6 @@
 // Poket offline cache. Bump VERSION when you upload new files.
-const VERSION='poket-v6';
-const FILES=['./','index.html','app.js','dash.js','manifest.webmanifest','icon-180.png','icon-192.png','icon-512.png'];
+const VERSION='poket-v7';
+const FILES=['./','index.html','app.js','dash.js','modules.js','manifest.webmanifest','icon-180.png','icon-192.png','icon-512.png'];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(VERSION).then(c=>c.addAll(FILES)).then(()=>self.skipWaiting()))});
 // Deleting old caches also removes any error pages a previous version stored.
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==VERSION).map(k=>caches.delete(k)))).then(()=>self.clients.claim()))});

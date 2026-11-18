@@ -12,7 +12,8 @@ Poket ("Your money. Your clarity.") is a personal finance command centre for iPh
 |---|---|
 | `index.html` | Shell + all CSS (design tokens at top, dashboard styles at bottom) |
 | `app.js` | Core: icons, i18n (`L.en`/`L.ms`), state `S`, persistence, calculations, all tabs, sheets, actions (`ACT`), import, backup/restore, boot |
-| `dash.js` | Home dashboard ("Financial Command Centre"): widgets, SVG charts, detail sheets, customisation. Loaded **after** `app.js`; extends `IP` and `ACT` |
+| `dash.js` | Overview dashboard ("Financial Command Centre"): calculations (forecast, safe-to-spend, payment calendar…), SVG charts, 17 widgets, detail sheets (`DS`), customisation. Loaded after `app.js`; extends `IP` and `ACT` |
+| `modules.js` | Module navigation: tabs Overview · Spending · Wallet · Bills · Assets with sub-sections (`MSEG`), More menu, Statistics, Poket Connect, Tax Centre. Registers views in `VIEWS`, old hashes via `ROUTE_ALIAS`. Loaded last |
 | `sw.js` | Offline cache. **Bump `VERSION` whenever any shipped file changes** and list new files in `FILES` |
 | `manifest.webmanifest`, `icon-*.png` | PWA metadata |
 | `docs/` | Assessment, roadmap, architecture/data model, design system |
@@ -20,7 +21,8 @@ Poket ("Your money. Your clarity.") is a personal finance command centre for iPh
 ## Rules
 - **Single source of truth:** balances are always *derived* (`computeBalances()` = opening balance + non-pending transactions). Never store a computed balance. Transfers (`t:'trf'`) are never income or spending.
 - Data lives in `localStorage` under the `poket:` prefix (`accounts`, `settings`, `plan`, `m-YYYY-MM`). Changing the shape requires a step in `migrate()` and must keep old backups restorable.
-- Every user-facing string needs **both** EN and BM (`L` in app.js, `DL` in dash.js).
+- Every user-facing string needs **both** EN and BM (`L` in app.js, `DL` in dash.js, `ML` in modules.js).
+- Pages reuse the dashboard's detail renderers (`DS.*`) — one implementation per figure, never a second calculation.
 - Clearly label estimates vs actuals (`.est` / `.est.act` tags). Never present a projection as fact.
 - Money formatting goes through `RM()` / `RM0()` (they honour the "Hide amounts" privacy setting).
 - Colours only via CSS variables; light and dark are tuned separately (see `docs/DESIGN_SYSTEM.md`).

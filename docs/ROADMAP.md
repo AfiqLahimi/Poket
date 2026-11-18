@@ -21,8 +21,10 @@ Accounts, transactions, derived balances, net worth, budgets, bills, debts, goal
 - ⬜ Automated tests for `computeBalances`, `monthStats`, `forecast`, `safeToSpend`
 
 ## Phase 3 — Capture & Poket Connect
-- ⬜ Poket Connect tutorial centre: step-by-step Apple Pay automation guide with annotated screenshots, progress, resume, checklist
-- ⬜ Integration status driven by real events (Not configured → Awaiting test transaction → Connected and tested, based on the first imported Shortcut line)
+- ✅ Poket Connect video tutorial (v7): 13-step animated walkthrough with illustrated iPhone screens, highlighted tap targets, autoplay, play/pause, back/next, saved progress + resume, EN/BM
+- ⬜ Real screen-recorded video (needs recording on an actual iPhone) and a shareable iCloud Shortcut link
+- ⬜ Separate tutorial for the manual Quick Expense shortcut (DuitNow QR / FPX / cards)
+- ✅ Integration status driven by real events (Not configured → Awaiting test transaction → Connected and tested, based on the first imported Shortcut line)
 - ⬜ Troubleshooting guide
 - ⬜ CSV statement import (Maybank, CIMB, etc.) with column mapping and duplicate detection
 - ⬜ Receipt scan (on-device OCR) — evaluate Tesseract.js size and accuracy vs waiting for native Vision

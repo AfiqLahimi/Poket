@@ -14,6 +14,7 @@ Poket ("Your money. Your clarity.") is a personal finance command centre for iPh
 | `app.js` | Core: icons, i18n (`L.en`/`L.ms`), state `S`, persistence, calculations, all tabs, sheets, actions (`ACT`), import, backup/restore, boot |
 | `dash.js` | Overview dashboard ("Financial Command Centre"): calculations (forecast, safe-to-spend, payment calendar…), SVG charts, 17 widgets, detail sheets (`DS`), customisation. Loaded after `app.js`; extends `IP` and `ACT` |
 | `modules.js` | Module navigation: tabs Overview · Spending · Wallet · Bills · Assets with sub-sections (`MSEG`), More menu, Statistics, Poket Connect, Tax Centre. Registers views in `VIEWS`, old hashes via `ROUTE_ALIAS`. Loaded last |
+| `tutorial.js` | Poket Connect animated video tutorial (`TSC` scenes, `TL` strings). Loaded last |
 | `sw.js` | Offline cache. **Bump `VERSION` whenever any shipped file changes** and list new files in `FILES` |
 | `manifest.webmanifest`, `icon-*.png` | PWA metadata |
 | `docs/` | Assessment, roadmap, architecture/data model, design system |

@@ -438,7 +438,8 @@ const W={
 function vDash(){
   const name=(S.settings.profile||{}).name;
   let h=`<div class="greet">${t('hi',esc(name||''))}</div>`;
-  if(!accs().length)return h+`<div class="hero2" style="margin-top:12px"><div class="big" style="font-size:24px;margin-top:2px">${t('welcomeT')}</div><div class="sub">${t('welcomeB')}</div><button class="cta" data-act="newAcc" data-v="bank">${t('addAccount')}</button></div><div class="btns" style="margin-top:10px"><button class="btn sm ghost" data-act="help">${t('guide')}</button><button class="btn sm ghost" data-act="dGo" data-v="connect">Poket Connect</button></div>`;
+  // New users still see the whole dashboard (each widget has its own empty state), with a setup card on top.
+  if(!accs().length)h+=`<div class="card setup"><div class="t1" style="font-size:15px;font-weight:700">${t('welcomeT')}</div><p class="small" style="margin:4px 0 10px">${t('welcomeB')}</p><div class="btns"><button class="btn sm" data-act="newAcc" data-v="bank">${ic('plus')}${t('addAccount')}</button><button class="btn sm ghost" data-act="dGo" data-v="connect">Poket Connect</button><button class="btn sm ghost" data-act="help">${t('guide')}</button></div></div>`;
   const k=S.viewMonth,cfg=DCFG();
   h+=heroCard(k);
   h+=`<div class="qa"><button data-act="addType" data-v="exp">${ic('minus')}${t('qSpend')}</button><button data-act="addType" data-v="inc">${ic('in')}${t('qIncome')}</button><button data-act="addType" data-v="trf">${ic('swap')}${t('qTransfer')}</button><button data-act="importSheet">${ic('save')}${t('qImport')}</button></div>`;

@@ -26,7 +26,7 @@ en:{
   tax:'Tax Centre',taxSub:'Malaysian income tax reliefs',soon:'Coming soon',more:'More',back:'Back',
   stNone:'Not configured',stWait:'Awaiting test transaction',stOk:'Connected and tested',stLast:d=>`Last import ${d}`,
   connIntro:'Log Apple Pay purchases automatically with an iPhone Shortcuts automation. Each payment is saved to a text file; open Poket and tap Import to add them.',
-  connSteps:'Set up the automation',connDone:'I have created the automation',connImport:'Import now',connStatus:'Status',
+  connSteps:'Written steps',connVideo:'Video tutorial',connDone:'I have created the automation',connImport:'Import now',connStatus:'Status',
   connLimits:'What works and what does not',
   connLim:['Wallet automations only run for <b>Apple Pay</b> payments (tap or in-app). DuitNow QR, FPX, online banking and physical cards are not seen by iOS.',
     'iOS does not let other apps read bank notifications. Use the manual Shortcut, or import a statement (coming soon).',
@@ -56,7 +56,7 @@ ms:{
   tax:'Pusat Cukai',taxSub:'Pelepasan cukai pendapatan Malaysia',soon:'Akan datang',more:'Lagi',back:'Kembali',
   stNone:'Belum disediakan',stWait:'Menunggu transaksi ujian',stOk:'Bersambung dan diuji',stLast:d=>`Import terakhir ${d}`,
   connIntro:'Rekod pembelian Apple Pay secara automatik dengan automasi Shortcuts iPhone. Setiap bayaran disimpan ke fail teks; buka Poket dan tekan Import.',
-  connSteps:'Sediakan automasi',connDone:'Saya sudah cipta automasi',connImport:'Import sekarang',connStatus:'Status',
+  connSteps:'Langkah bertulis',connVideo:'Video tutorial',connDone:'Saya sudah cipta automasi',connImport:'Import sekarang',connStatus:'Status',
   connLimits:'Apa yang berfungsi dan tidak',
   connLim:['Automasi Wallet hanya berjalan untuk bayaran <b>Apple Pay</b>. DuitNow QR, FPX, perbankan dalam talian dan kad fizikal tidak dikesan oleh iOS.',
     'iOS tidak benarkan app lain membaca notifikasi bank. Guna Shortcut manual, atau import penyata (akan datang).',
@@ -178,6 +178,7 @@ VIEWS.connect=()=>{
   const flow=['none','wait','ok'];const idx=flow.indexOf(cs.k);
   let h=`<button class="backl" data-act="tab" data-v="settings">${ic('left')}${m('more')}</button>`+ptitle(m('connect'))+`<p class="p">${m('connIntro')}</p>`;
   h+=`<div class="card"><div class="mhead" style="margin-bottom:8px"><b>${m('connStatus')}</b><span class="pill ${cs.cls}">${cs.label}</span></div><div class="steps3">${[m('stNone'),m('stWait'),m('stOk')].map((l,i)=>`<div class="${i<=idx?'on':''}"><span>${i<idx||cs.k==='ok'?ic('check'):i+1}</span>${l}</div>`).join('')}</div>${cs.last?`<div class="small" style="margin-top:8px">${m('stLast',dLabel(cs.last))}</div>`:''}</div>`;
+  if(typeof tutCard==='function')h+=sec(m('connVideo'))+tutCard();
   h+=sec(m('connSteps'))+`<div class="card list">${T().sc.map((s,i)=>`<div class="tip"><span class="n">${i+1}</span><div>${s}${i===2?`<span class="code">${esc(tpl)}</span>${t('sc3b')}`:''}</div></div>`).join('')}</div>`;
   h+=`<div class="btns"><button class="btn sm ghost" data-act="copy" data-v="${esc(tpl)}">${t('copyFormat')}</button>${cs.k==='none'?`<button class="btn sm" data-act="connStart">${m('connDone')}</button>`:''}<button class="btn sm ${cs.k==='none'?'ghost':''}" data-act="importSheet">${m('connImport')}</button></div>`;
   h+=sec(m('connLimits'))+`<div class="card list">${m('connLim').map(s=>`<div class="tip"><span class="n">!</span><div>${s}</div></div>`).join('')}</div><div class="msg warn">${t('scWarn')}</div>`;

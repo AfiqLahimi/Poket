@@ -253,8 +253,9 @@ const mLabel=k=>{const [y,m]=k.split('-');return T().mon[+m-1]+' '+y};
 const mLabelF=k=>{const [y,m]=k.split('-');return T().monF[+m-1]+(y!==String(new Date().getFullYear())?' '+y:'')};
 const dLabel=ds=>{const y=new Date();y.setDate(y.getDate()-1);if(ds===todayStr())return t('today');if(ds===dStr(y))return t('yesterday');const [Y,M,D]=ds.split('-');return (+D)+' '+T().mon[+M-1]+(Y!==String(new Date().getFullYear())?' '+Y:'')};
 const r2=n=>Math.round((+n||0)*100)/100;
-const RM=n=>{n=r2(n);return (n<0?'-':'')+'RM'+Math.abs(n).toLocaleString('en-MY',{minimumFractionDigits:2,maximumFractionDigits:2})};
-const RM0=n=>{n=Math.round(+n||0);return (n<0?'-':'')+'RM'+Math.abs(n).toLocaleString('en-MY')};
+const HIDE=()=>!!(typeof S!=='undefined'&&S.settings&&S.settings.privacy);
+const RM=n=>{if(HIDE())return 'RM •••';n=r2(n);return (n<0?'-':'')+'RM'+Math.abs(n).toLocaleString('en-MY',{minimumFractionDigits:2,maximumFractionDigits:2})};
+const RM0=n=>{if(HIDE())return 'RM •••';n=Math.round(+n||0);return (n<0?'-':'')+'RM'+Math.abs(n).toLocaleString('en-MY')};
 const pct=n=>(isFinite(n)?(Math.round(n*10)/10):0)+'%';
 const nid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
 const num=v=>{if(typeof v==='number')return v;return parseFloat(String(v||'').replace(/[^0-9.,-]/g,'').replace(/,/g,''))};
@@ -434,7 +435,7 @@ function render(){
   $('#fab').style.display=(r==='settings'||r==='goals'||!S.ready)?'none':'';
   $('#gear').className='icbtn'+(r==='settings'?' on':'');
   if(!S.ready){$('#view').innerHTML=`<div class="empty">${t('loading')}</div>`;return}
-  $('#view').innerHTML=modeBanner()+({home:vHome,activity:vAct,portfolio:vPort,debts:vDebts,goals:vGoals,settings:vSettings}[r])();
+  $('#view').innerHTML=modeBanner()+({home:()=>typeof vDash==='function'?vDash():vHome(),activity:vAct,portfolio:vPort,debts:vDebts,goals:vGoals,settings:vSettings}[r])();
 }
 
 function vHome(){
@@ -607,7 +608,7 @@ function vSettings(){
   </div><div class="card list menu" style="margin-top:-2px">${mrow('tag',t('sCats'),'cats')}</div>
   ${sec(t('sData'))}<div class="card list menu">${mrow('zap',t('sShortcut'),'shortcut')}${mrow('save',t('sImport'),'importSheet')}${mrow('up',t('sBackup'),'backup',`<span class="small" style="margin-right:4px">${S.settings.lastBackup?dLabel(S.settings.lastBackup):''}</span>`)}${mrow('swap',t('sRestore'),'restore')}</div>
   ${sec(t('sHelpGrp'))}<div class="card list menu">${mrow('help',t('sHelp'),'help')}${mrow('shield',t('sAbout'),'about')}</div>
-  <p class="small" style="text-align:center;margin:18px 0">Poket · v4 (iPhone)</p>`;
+  <p class="small" style="text-align:center;margin:18px 0">Poket · v5 (iPhone)</p>`;
 }
 
 /* ================= Sheets ================= */
@@ -765,9 +766,9 @@ function openBudget(cat){
   ACT.budCat=v=>{sel=v;draw()};ACT.budSave=()=>{if(!sel)return toast(t('category'));const v=r2(num($('#bud_amt').value)||0);if(v>0)pl.budgets[sel]=v;else delete pl.budgets[sel];savePlan();closeSheet();render();toast(t('tSaved'))};
   draw();
 }
-function openBill(id){
+function openBill(id,preset){
   const pl=P_();const ex=id?pl.bills.find(x=>x.id===id):null;
-  const d=ex?Object.assign({},ex):{name:'',amt:'',day:new Date().getDate(),freq:'m',month:new Date().getMonth()+1,cat:'bills',acc:(accs().find(a=>a.type==='bank')||{}).id||''};
+  const d=ex?Object.assign({},ex):Object.assign({name:'',amt:'',day:new Date().getDate(),freq:'m',month:new Date().getMonth()+1,cat:'bills',acc:(accs().find(a=>a.type==='bank')||{}).id||''},preset||{});
   const read=()=>{const g=k=>{const e=document.getElementById('b_'+k);return e?e.value:d[k]};['name','amt','day','freq','month','acc'].forEach(k=>d[k]=g(k))};
   const draw=()=>{openSheet(`<h3>${t('billT')}</h3>
    <div class="f"><label>${t('billName')}</label><input id="b_name" placeholder="${esc(t('billNamePh'))}" value="${esc(d.name)}"></div>
@@ -948,4 +949,5 @@ async function boot(){
   if('serviceWorker' in navigator&&location.protocol==='https:'){navigator.serviceWorker.register('sw.js').catch(()=>{})}
   window.addEventListener('storage',e=>{if(e.key&&e.key.startsWith(PFX)){loadLocal();render()}});
 }
-boot();
+// dash.js loads after this file; boot once every script has run.
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
